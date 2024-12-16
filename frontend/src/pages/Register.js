@@ -5,13 +5,12 @@ function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
-    e.preventDefault(); // Prevent form submission
+  const handleRegister = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/register`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -19,51 +18,55 @@ function Register() {
         body: JSON.stringify({ username, email, password }),
       });
       const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message);
-        // Store validation code and username in localStorage
-        localStorage.setItem('pendingValidation', JSON.stringify({
-          username,
-          validationCode: data.validation_code
-        }));
-        // Navigate to validate page
-        navigate('/validate');
-      } else {
-        setMessage(data.detail || 'Registration failed');
+      
+      if (!response.ok) {
+        setError(data.detail);
+        return;
       }
+
+      // Navigate to validate page with username and validation code
+      navigate('/validate', { 
+        state: { 
+          username,
+          validationCode: data.validation_code 
+        }
+      });
     } catch (error) {
-      setMessage('Registration failed: ' + error.message);
+      setError('Registration failed: ' + error.message);
     }
   };
 
   return (
     <div className="page">
       <h1>Register</h1>
-      <form className="form" onSubmit={handleRegister}>
+      <div className="form">
+        <label htmlFor="username">Username:</label>
         <input
+          id="username"
           type="text"
-          placeholder="Username"
+          placeholder="Enter username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          required
         />
+        <label htmlFor="email">Email:</label>
         <input
+          id="email"
           type="email"
-          placeholder="Email"
+          placeholder="Enter email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
+        <label htmlFor="password">Password:</label>
         <input
+          id="password"
           type="password"
-          placeholder="Password"
+          placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
         />
-        <button type="submit">Register</button>
-        {message && <p className="message">{message}</p>}
-      </form>
+        <button onClick={handleRegister}>Register</button>
+        {error && <p className="error-message">{error}</p>}
+      </div>
     </div>
   );
 }

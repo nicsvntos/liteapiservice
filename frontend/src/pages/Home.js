@@ -7,29 +7,26 @@ function Home() {
   const username = localStorage.getItem('user');
 
   useEffect(() => {
-    // If no user is logged in, redirect to signin
     if (!username) {
       navigate('/signin');
       return;
     }
 
-    // Fetch home content
     const fetchHome = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/home?username=${username}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/home?username=${username}`);
         const data = await response.json();
         setMessage(data.message);
       } catch (error) {
         setMessage('Failed to get home content');
       }
     };
-
     fetchHome();
   }, [username, navigate]);
 
   const handleSignOut = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/signout?username=${username}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/signout?username=${username}`, {
         method: 'POST',
       });
       localStorage.removeItem('user');
@@ -42,12 +39,12 @@ function Home() {
   return (
     <div className="home-page">
       <div className="home-content">
-        <h1>Welcome to Your Dashboard</h1>
+        <h1 className="welcome-title">Welcome {username}</h1>
         <div className="welcome-message">
           <h2>{message}</h2>
         </div>
         <div className="user-actions">
-          <button className="signout-btn" onClick={handleSignOut}>
+          <button className="signout-button" onClick={handleSignOut}>
             Sign Out
           </button>
         </div>

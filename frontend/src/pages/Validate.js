@@ -1,35 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Validate() {
-  const [username, setUsername] = useState('');
-  const [validationCode, setValidationCode] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const [username, setUsername] = useState(location.state?.username || '');
+  const [inputCode, setInputCode] = useState('');
+  const [message, setMessage] = useState('');
 
-  useEffect(() => {
-    // Get stored validation data
-    const storedData = localStorage.getItem('pendingValidation');
-    if (storedData) {
-      const { username: storedUsername, validationCode: storedCode } = JSON.parse(storedData);
-      setUsername(storedUsername);
-      setValidationCode(storedCode);
-    }
-  }, []);
+  // Get the validation code from the location state
+  const validationCode = location.state?.validationCode;
 
-  const handleValidate = async (e) => {
-    e.preventDefault();
+  const handleValidate = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/validate?username=${username}&code=${validationCode}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/validate?username=${username}&code=${inputCode}`, {
         method: 'POST',
       });
       const data = await response.json();
+      
       if (response.ok) {
-        setMessage(data.message);
-        // Clear stored validation data
-        localStorage.removeItem('pendingValidation');
+        setMessage('Account validated successfully!');
         // Navigate to signin page after successful validation
-        setTimeout(() => navigate('/signin'), 1500);
+        setTimeout(() => {
+          navigate('/signin');
+        }, 1500);
       } else {
         setMessage(data.detail || 'Validation failed');
       }
@@ -41,24 +35,39 @@ function Validate() {
   return (
     <div className="page">
       <h1>Validate Account</h1>
-      <form className="form" onSubmit={handleValidate}>
+      <div className="form">
+        <label htmlFor="username">Username:</label>
         <input
+          id="username"
           type="text"
-          placeholder="Username"
+          placeholder="Enter username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          required
         />
+
+        {/* Display the validation code */}
+        {validationCode && (
+          <div className="validation-code-display">
+            <label>Your Validation Code:</label>
+            <div className="code-box">{validationCode}</div>
+            <p className="code-instruction">Please enter this code below to validate your account</p>
+          </div>
+        )}
+
+        <label htmlFor="validationCode">Enter Validation Code:</label>
         <input
+          id="validationCode"
           type="text"
-          placeholder="Validation Code"
-          value={validationCode}
-          onChange={(e) => setValidationCode(e.target.value)}
-          required
+          placeholder="Enter the code shown above"
+          value={inputCode}
+          onChange={(e) => setInputCode(e.target.value)}
         />
-        <button type="submit">Validate</button>
-        {message && <p className="message">{message}</p>}
-      </form>
+        
+        <button onClick={handleValidate}>Validate</button>
+        {message && <p className={message.includes('successfully') ? 'success-message' : 'error-message'}>
+          {message}
+        </p>}
+      </div>
     </div>
   );
 }
