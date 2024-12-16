@@ -1,0 +1,86 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  label {
+    font-weight: 500;
+    margin-top: 0.5rem;
+    color: #2c3e50;
+  }
+  
+  input {
+    padding: 12px;
+    border: 1px solid #dcdfe6;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  }
+  
+  button {
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+  }
+  
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .message {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .error-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fff5f5;
+    color: #c53030;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    border: 1px solid #feb2b2;
+  }
+  
+  .success-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f0fff4;
+    color: #276749;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    border: 1px solid #9ae6b4;
+  }
+  
