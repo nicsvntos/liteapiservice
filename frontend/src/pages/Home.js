@@ -24,29 +24,21 @@ function Home() {
     fetchHome();
   }, [username, navigate]);
 
-  const handleSignOut = async () => {
-    try {
-      await fetch(`${process.env.REACT_APP_API_URL}/signout?username=${username}`, {
-        method: 'POST',
-      });
-      localStorage.removeItem('user');
-      navigate('/signin');
-    } catch (error) {
-      setMessage('Sign out failed: ' + error.message);
-    }
-  };
-
   return (
     <div className="home-page">
       <div className="home-content">
-        <h1 className="welcome-title">Welcome {username}</h1>
-        <div className="welcome-message">
-          <h2>{message}</h2>
+        <h1 className="welcome-title">Welcome {username}!</h1>
+        <div className="welcome-image">
+          <img 
+            src="/powder.gif" 
+            alt="powder from arcane" 
+            className="main-image"
+          />
         </div>
-        <div className="user-actions">
-          <button className="signout-button" onClick={handleSignOut}>
-            Sign Out
-          </button>
+        <div className="welcome-message">
+          <p className="welcome-text">
+            This is a dedicated homepage for {username}!
+          </p>
         </div>
       </div>
     </div>
