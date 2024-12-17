@@ -38,10 +38,22 @@ app.add_middleware(
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Pydantic models for request bodies
 class UserCreate(BaseModel):
     username: str
     email: str
     password: str
+
+class UserValidate(BaseModel):
+    username: str
+    code: str
+
+class UserSignIn(BaseModel):
+    username: str
+    password: str
+
+class UserSignOut(BaseModel):
+    username: str
 
 class UserResponse(BaseModel):
     username: str
@@ -52,12 +64,11 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# Add endpoint to list all users
 @app.get("/users")
 async def list_users(db: Session = Depends(get_db)):
     users = db.query(User).all()
-    return [{"username": user.username, 
-             "email": user.email, 
+    return [{"username": user.username,
+             "email": user.email,
              "is_validated": user.is_validated,
              "created_at": user.created_at} for user in users]
 
@@ -87,42 +98,42 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     return {"message": "Registration successful", "validation_code": validation_code}
 
 @app.post("/validate")
-async def validate(username: str, code: str, db: Session = Depends(get_db)):
-    logger.info(f"Attempting to validate user: {username}")
+async def validate(user: UserValidate, db: Session = Depends(get_db)):
+    logger.info(f"Attempting to validate user: {user.username}")
     
-    user = db.query(User).filter(User.username == username).first()
-    if not user or user.validation_code != code:
-        logger.warning(f"Validation failed for user: {username}")
+    db_user = db.query(User).filter(User.username == user.username).first()
+    if not db_user or db_user.validation_code != user.code:
+        logger.warning(f"Validation failed for user: {user.username}")
         raise HTTPException(status_code=400, detail="Invalid validation code")
     
-    user.is_validated = True
-    user.validation_code = None
+    db_user.is_validated = True
+    db_user.validation_code = None
     db.commit()
     
-    logger.info(f"Successfully validated user: {username}")
+    logger.info(f"Successfully validated user: {user.username}")
     return {"message": "Account validated successfully"}
 
 @app.post("/signin")
-async def signin(username: str, password: str, db: Session = Depends(get_db)):
-    logger.info(f"Signin attempt for user: {username}")
+async def signin(user: UserSignIn, db: Session = Depends(get_db)):
+    logger.info(f"Signin attempt for user: {user.username}")
     
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
-        logger.warning(f"Signin failed: User not found: {username}")
+    db_user = db.query(User).filter(User.username == user.username).first()
+    if not db_user:
+        logger.warning(f"Signin failed: User not found: {user.username}")
         raise HTTPException(status_code=400, detail="User not found")
-    if not user.is_validated:
-        logger.warning(f"Signin failed: User not validated: {username}")
+    if not db_user.is_validated:
+        logger.warning(f"Signin failed: User not validated: {user.username}")
         raise HTTPException(status_code=400, detail="Account not validated")
-    if not pwd_context.verify(password, user.password):
-        logger.warning(f"Signin failed: Invalid password for user: {username}")
+    if not pwd_context.verify(user.password, db_user.password):
+        logger.warning(f"Signin failed: Invalid password for user: {user.username}")
         raise HTTPException(status_code=400, detail="Invalid password")
     
-    logger.info(f"Successful signin for user: {username}")
+    logger.info(f"Successful signin for user: {user.username}")
     return {"message": "Signed in successfully", "username": user.username}
 
 @app.post("/signout")
-async def signout(username: str):
-    logger.info(f"User signed out: {username}")
+async def signout(user: UserSignOut):
+    logger.info(f"User signed out: {user.username}")
     return {"message": "Signed out successfully"}
 
 @app.get("/home")
