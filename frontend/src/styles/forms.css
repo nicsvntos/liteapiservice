@@ -83,4 +83,42 @@
     width: 100%;
     border: 1px solid #9ae6b4;
   }
+
+  .validation-code-display {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .code-title {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  
+  .code-box {
+    background-color: #e9ecef;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #2c3e50;
+    border: 2px dashed #007bff;
+    user-select: all;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .code-instruction {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+  
   

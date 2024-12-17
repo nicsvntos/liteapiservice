@@ -7,8 +7,14 @@ function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/signout?username=${username}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/signout`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username
+        })
       });
       localStorage.removeItem('user');
       navigate('/signin');
@@ -21,12 +27,10 @@ function Navbar() {
     <nav>
       <div className="nav-container">
         {username ? (
-          // When logged in, only show sign out button on the right
           <div className="nav-right">
             <button className="signout-button" onClick={handleSignOut}>Sign Out</button>
           </div>
         ) : (
-          // When not logged in, show register and sign in centered
           <div className="nav-center">
             <Link to="/register">Register</Link>
             <Link to="/signin">Sign In</Link>
