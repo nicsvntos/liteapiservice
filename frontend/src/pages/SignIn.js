@@ -7,15 +7,14 @@ function SignIn() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleSignIn = async (e) => {
-    e.preventDefault();
+  const handleSignIn = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000'}/signin?username=${username}&password=${password}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/signin?username=${username}&password=${password}`, {
         method: 'POST',
       });
       const data = await response.json();
+      
       if (response.ok) {
-        // Store username in localStorage
         localStorage.setItem('user', username);
         navigate('/home');
       } else {
@@ -29,24 +28,26 @@ function SignIn() {
   return (
     <div className="page">
       <h1>Sign In</h1>
-      <form className="form" onSubmit={handleSignIn}>
+      <div className="form">
+        <label htmlFor="username">Username:</label>
         <input
+          id="username"
           type="text"
-          placeholder="Username"
+          placeholder="Enter username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          required
         />
+        <label htmlFor="password">Password:</label>
         <input
+          id="password"
           type="password"
-          placeholder="Password"
+          placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
         />
-        <button type="submit">Sign In</button>
-        {message && <p className="message">{message}</p>}
-      </form>
+        <button onClick={handleSignIn}>Sign In</button>
+        {message && <p className="error-message">{message}</p>}
+      </div>
     </div>
   );
 }
