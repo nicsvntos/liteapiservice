@@ -22,7 +22,12 @@ A simple full-stack web application featuring user authentication built with Rea
    ```docker-compose down -v```
 3. Access the database:
    ```docker-compose exec db psql -U postgres -d auth_db```
+4. If connection to the database server fails:
+   - Stop the container:
+      ```docker-compose down```
+   - Rebuild:
+      ```docker-compose up --build```
 
 ## Used Code
 
-Majority of the code in the backend follows the project structure and implementation of [Using FastAPI with SQLAlchemy](https://jnikenoueba.medium.com/using-fastapi-with-sqlalchemy-5cd370473fe5).
+Majority of the code in the backend follows the project structure and implementation of [Using FastAPI with SQLAlchemy](https://jnikenoueba.medium.com/using-fastapi-with-sqlalchemy-5cd370473fe5) and [How to Build a CRUD application](https://github.com/wpcodevo/fastapi_sqlalchemy?tab=readme-ov-file).
